@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}About | Network Scanner{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h2>About this project</h2>
+    <p>This web app provides a friendly interface for scanning local IPv4 networks and managing authorized devices remotely.</p>
+    <div class="info-grid">
+      <article class="info-card">
+        <h3>Scan devices</h3>
+        <p>Discover active hosts on your subnet, including IP address, hostname, MAC address, and vendor/type.</p>
+      </article>
+      <article class="info-card">
+        <h3>Export results</h3>
+        <p>Save scan output as a CSV file for auditing, inventory, or further analysis.</p>
+      </article>
+      <article class="info-card">
+        <h3>Remote control</h3>
+        <p>Send shutdown commands to managed Windows and Linux/macOS devices safely from the web UI.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Why use this tool?</h2>
+    <ul class="feature-list">
+      <li>Fast subnet scanning with host detail discovery.</li>
+      <li>Built-in CSV export for reporting.</li>
+      <li>Clear status messages and safe shutdown controls.</li>
+      <li>Designed for administrators and authorized network operators.</li>
+    </ul>
+  </section>
+{% endblock %}

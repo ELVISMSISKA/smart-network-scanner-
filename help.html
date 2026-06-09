@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Help | Network Scanner{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h2>Help & Usage</h2>
+    <p>Use this page to get quick guidance for scanning and safely shutting down devices in your authorized network.</p>
+    <div class="help-section">
+      <h3>Scanning</h3>
+      <p>Enter a CIDR network like <code>192.168.1.0/24</code> and click <strong>Start Scan</strong>. The tool will discover active hosts and show them in the results table.</p>
+    </div>
+    <div class="help-section">
+      <h3>Exporting results</h3>
+      <p>After scanning, use the <strong>Download CSV</strong> button to save device data for reporting or review.</p>
+    </div>
+    <div class="help-section">
+      <h3>Remote shutdown</h3>
+      <p>Select a device IP from the dropdown, choose the target OS, and send the shutdown command. Linux/macOS devices require SSH username and private key path.</p>
+    </div>
+    <div class="help-section">
+      <h3>Safety tips</h3>
+      <ul>
+        <li>Only scan networks and devices you own or are explicitly authorized to manage.</li>
+        <li>Do not issue shutdown commands to mobile or IoT devices.</li>
+        <li>Use admin credentials responsibly for Windows RPC shutdown and SSH shutdown.</li>
+      </ul>
+    </div>
+  </section>
+{% endblock %}

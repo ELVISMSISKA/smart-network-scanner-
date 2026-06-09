@@ -1,0 +1,3 @@
+Flask
+mac-vendor-lookup
+psutil

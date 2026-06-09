@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Network Scanner Web UI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <header class="hero">
+        <div>
+          <h1>Network Scanner & Remote Shutdown</h1>
+          <p>Scan your subnet for active devices, inspect IP/hostname/MAC, and send shutdown commands when needed.</p>
+        </div>
+      </header>
+
+      <main class="content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="alerts">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <section class="panel">
+          <h2>Scan the network</h2>
+          <form method="post" class="scan-form">
+            <label for="network">Network CIDR</label>
+            <input id="network" name="network" type="text" value="{{ network }}" placeholder="192.168.1.0/24" />
+            <button type="submit" class="button button-primary">Start Scan</button>
+          </form>
+        </section>
+
+        {% if scan_done %}
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Scan results</h2>
+              <div class="panel-actions">
+                <span class="badge">{{ hosts|length }} device(s)</span>
+                <a class="button button-secondary" href="{{ url_for('export_csv') }}">Download CSV</a>
+              </div>
+            </div>
+
+            {% if hosts %}
+              <div class="table-toolbar">
+                <label for="search">Filter devices</label>
+                <input id="search" type="text" placeholder="Search IP, hostname, MAC, or type" oninput="filterHosts()" />
+              </div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>IP Address</th>
+                      <th>Hostname</th>
+                      <th>MAC</th>
+                      <th>Type</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for host in hosts %}
+                      <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ host.ip }}</td>
+                        <td>{{ host.hostname }}</td>
+                        <td>{{ host.mac }}</td>
+                        <td>{{ host.type }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="shutdown-panel">
+                <h3>Shutdown a device</h3>
+                <form method="post" action="{{ url_for('shutdown') }}" class="shutdown-form">
+                  <label for="ip">Device IP</label>
+                  <select id="ip" name="ip">
+                    {% for host in hosts %}
+                      <option value="{{ host.ip }}">{{ host.ip }} — {{ host.hostname }} ({{ host.type }})</option>
+                    {% endfor %}
+                  </select>
+
+                  <label for="os_type">Target OS</label>
+                  <select id="os_type" name="os_type" onchange="toggleSshFields();">
+                    <option value="windows">Windows</option>
+                    <option value="linux">Linux / macOS</option>
+                  </select>
+
+                  <div id="ssh-fields" class="ssh-fields hidden">
+                    <label for="username">SSH Username</label>
+                    <input id="username" name="username" type="text" placeholder="ssh user" />
+
+                    <label for="key_path">SSH Private Key Path</label>
+                    <input id="key_path" name="key_path" type="text" placeholder="e.g. ~/.ssh/id_rsa" />
+                  </div>
+
+                  <button type="submit" class="button button-danger">Send Shutdown</button>
+                </form>
+              </div>
+            {% else %}
+              <p class="empty-state">No active devices were found on {{ network }}.</p>
+            {% endif %}
+          </section>
+        {% endif %}
+      </main>
+
+      <footer class="footer">
+        <p>Safe use only — scan and shutdown devices you own or are authorized to manage.</p>
+      </footer>
+    </div>
+
+    <script>
+      function toggleSshFields() {
+        const osType = document.getElementById('os_type').value;
+        const sshFields = document.getElementById('ssh-fields');
+        sshFields.classList.toggle('hidden', osType === 'windows');
+      }
+
+      function filterHosts() {
+        const filter = document.getElementById('search').value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(filter) ? '' : 'none';
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', toggleSshFields);
+    </script>
+  </body>
+</html>
